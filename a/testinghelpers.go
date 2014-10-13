@@ -7,7 +7,7 @@ import (
 )
 
 func previousStack() string {
-	buf := make([]byte, 10000)
+	buf := make([]byte, 100000)
 	runtime.Stack(buf, false)
 	return string(buf)
 }
