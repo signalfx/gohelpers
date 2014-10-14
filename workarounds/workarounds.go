@@ -31,3 +31,8 @@ func GolangDoesnotAllowPointerToIntLiteral(s int64) *int64 {
 func GolangDoesnotAllowPointerToUint16Literal(s uint16) *uint16 {
 	return &s
 }
+
+// GolangDoesnotAllowPointerToUintLiteral allows one to take the address of a uint32 literal
+func GolangDoesnotAllowPointerToDurationLiteral(s time.Duration) *time.Duration {
+	return &s
+}
