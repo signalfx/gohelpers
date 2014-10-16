@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 	"runtime"
+	"reflect"
 )
 
 func previousStack() string {
@@ -13,13 +14,13 @@ func previousStack() string {
 }
 
 func ExpectEquals(t *testing.T, item interface{}, equals interface{}, msg string) {
-	if item != equals {
+	if !reflect.DeepEqual(item, equals) {
 		t.Errorf("%s != %s: %s @ %s", item, equals, msg, previousStack())
 	}
 }
 
 func ExpectNotEquals(t *testing.T, item interface{}, equals interface{}, msg string) {
-	if item == equals {
+	if reflect.DeepEqual(item, equals) {
 		buf := make([]byte, 10000)
 		runtime.Stack(buf, false)
 		t.Errorf("%s != %s: %s @ %s", item, equals, msg, previousStack())
