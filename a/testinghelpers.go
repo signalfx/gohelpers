@@ -19,6 +19,18 @@ func ExpectEquals(t *testing.T, item interface{}, equals interface{}, msg string
 	}
 }
 
+func ExpectNil(t *testing.T, item interface{}) {
+	if item != nil {
+		t.Errorf("Not nil: %s", item)
+	}
+}
+
+func ExpectNotNil(t *testing.T, item interface{}) {
+	if item == nil {
+		t.Errorf("Nil: %s", item)
+	}
+}
+
 func ExpectNotEquals(t *testing.T, item interface{}, equals interface{}, msg string) {
 	if reflect.DeepEqual(item, equals) {
 		buf := make([]byte, 10000)
