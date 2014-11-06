@@ -5,6 +5,8 @@ import (
 	"os"
 	"encoding/json"
 	"bufio"
+	"io"
+	"io/ioutil"
 )
 
 // ---------------- file.WriteString(str)
@@ -88,6 +90,43 @@ func (stub *ReaderReadBytesObj) Execute(reader *bufio.Reader, delim byte) ([]byt
 }
 
 func (stub *ReaderReadBytesObj) Reset() {
+	stub.toCallReadMutex.Lock()
+	defer stub.toCallReadMutex.Unlock()
+
+	stub.toCall = nil
+	stub.changedCallMutex.Unlock()
+}
+
+// -------------------- ioutil.ReadAll
+type IoutilReadAllObj struct {
+	changedCallMutex sync.Mutex
+
+	toCallReadMutex sync.Mutex
+	toCall func(r io.Reader) ([]byte, error)
+}
+
+func (stub *IoutilReadAllObj) UseFunction(toCall func(r io.Reader) ([]byte, error)) {
+	stub.toCallReadMutex.Lock()
+	defer stub.toCallReadMutex.Unlock()
+
+
+	stub.changedCallMutex.Lock()
+	stub.toCall = toCall
+}
+
+func (stub *IoutilReadAllObj) Execute(r io.Reader) ([]byte, error) {
+	stub.toCallReadMutex.Lock()
+	defer stub.toCallReadMutex.Unlock()
+
+	if stub.toCall == nil {
+		stub.changedCallMutex.Lock()
+		defer stub.changedCallMutex.Unlock()
+		return ioutil.ReadAll(r)
+	}
+	return stub.toCall(r)
+}
+
+func (stub *IoutilReadAllObj) Reset() {
 	stub.toCallReadMutex.Lock()
 	defer stub.toCallReadMutex.Unlock()
 
